@@ -1,0 +1,276 @@
+/* ===========================================================
+   House Rent Bill — UI + Invoice (แบบเดียวกับชีต House Rent Bill)
+   =========================================================== */
+
+:root{
+  --bg:#f4f6fb;
+  --surface:#ffffff;
+  --line:#e3e8f2;
+  --ink:#1a2233;
+  --muted:#69748c;
+  --accent:#2f5597;          /* น้ำเงินหัวตาราง (เหมือนในรูป) */
+  --accent-soft:#eaf0fb;
+  --frame:#1f6fc4;           /* กรอบนอกใบแจ้งหนี้ */
+  --bank:#1f5fbf;            /* ตัวหนังสือสีน้ำเงินท้ายบิล */
+  --ok:#1a8f5a;
+  --warn:#c47f00;
+  --err:#c8372d;
+  --radius:12px;
+  --shadow:0 1px 2px rgba(20,30,60,.06), 0 8px 24px rgba(20,30,60,.06);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Sarabun","Segoe UI",system-ui,-apple-system,sans-serif;
+  font-size:15px;
+  line-height:1.5;
+}
+a{color:var(--frame)}
+
+/* ---------- Top bar ---------- */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; gap:20px; flex-wrap:wrap;
+  padding:10px 20px;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.brand{display:flex; align-items:center; gap:10px}
+.brand-mark{
+  display:grid; place-items:center;
+  width:38px; height:38px; border-radius:10px;
+  background:linear-gradient(140deg,var(--accent),var(--frame));
+  color:#fff; font-weight:700; font-size:13px; letter-spacing:.5px;
+}
+.brand-title{font-weight:700; line-height:1.1}
+.brand-sub{font-size:12px; color:var(--muted)}
+
+.tabs{display:flex; gap:4px; flex-wrap:wrap; margin-left:auto}
+.tab{
+  border:1px solid transparent; background:transparent; cursor:pointer;
+  padding:8px 14px; border-radius:999px;
+  font:inherit; font-size:14px; color:var(--muted);
+}
+.tab:hover{background:var(--accent-soft); color:var(--accent)}
+.tab.is-active{background:var(--accent); color:#fff; font-weight:600}
+
+.conn{display:flex; align-items:center; gap:7px; font-size:13px; color:var(--muted)}
+.conn .dot{width:9px; height:9px; border-radius:50%; background:#c3cad8}
+.conn.is-ok .dot{background:var(--ok)}
+.conn.is-err .dot{background:var(--err)}
+.conn.is-busy .dot{background:var(--warn)}
+
+/* ---------- Layout ---------- */
+main{padding:20px; max-width:1440px; margin:0 auto}
+.page{display:none}
+.page.is-active{display:block}
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:18px 20px;
+  margin-bottom:18px;
+}
+.card-head{display:flex; align-items:center; justify-content:space-between; gap:12px}
+.card-title{margin:0 0 14px; font-size:17px; font-weight:700}
+.card-head .card-title{margin-bottom:14px}
+
+.grid-report{display:grid; grid-template-columns:minmax(340px,400px) 1fr; gap:18px; align-items:start}
+@media (max-width:1100px){ .grid-report{grid-template-columns:1fr} }
+
+/* ---------- Form ---------- */
+.field{display:flex; flex-direction:column; gap:5px; margin-bottom:12px; flex:1 1 140px}
+.field-label{font-size:13px; color:var(--muted); font-weight:500}
+.field-row{display:flex; gap:12px; flex-wrap:wrap}
+input,select,textarea{
+  font:inherit; color:var(--ink);
+  padding:9px 11px; border:1px solid #d6dceb; border-radius:9px;
+  background:#fff; width:100%;
+}
+input:focus,select:focus{outline:2px solid var(--accent-soft); border-color:var(--accent)}
+input[readonly]{background:#f6f8fc; color:var(--muted)}
+.check{display:flex; align-items:center; gap:9px; margin:6px 0 14px; font-size:14px}
+.check input{width:auto}
+.hint{font-size:12.5px; color:var(--muted); margin:6px 0 0}
+.more{margin:6px 0 14px; border-top:1px dashed var(--line); padding-top:10px}
+.more summary{cursor:pointer; font-size:14px; color:var(--accent); font-weight:600}
+.more[open] summary{margin-bottom:10px}
+
+.actions{display:flex; gap:9px; flex-wrap:wrap; margin-top:6px}
+.btn{
+  font:inherit; font-weight:600; cursor:pointer;
+  padding:10px 16px; border-radius:9px;
+  border:1px solid #d6dceb; background:#fff; color:var(--ink);
+}
+.btn:hover{border-color:var(--accent); color:var(--accent)}
+.btn-primary{background:var(--accent); border-color:var(--accent); color:#fff}
+.btn-primary:hover{filter:brightness(1.08); color:#fff}
+.btn-sm{padding:6px 12px; font-size:13px}
+.btn:disabled{opacity:.55; cursor:not-allowed}
+.btn-link{border:0; background:none; color:var(--err); cursor:pointer; font:inherit; font-size:13px; padding:2px 6px}
+
+/* ---------- Tables (หน้า Data / Places / Tenants) ---------- */
+.filters{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:8px}
+.filters .field{max-width:280px}
+.table-scroll{overflow-x:auto; border:1px solid var(--line); border-radius:10px}
+table.grid{border-collapse:collapse; width:100%; font-size:14px; background:#fff}
+table.grid th, table.grid td{padding:8px 12px; border-bottom:1px solid var(--line); text-align:left; white-space:nowrap}
+table.grid thead th{background:var(--accent-soft); color:var(--accent); font-weight:600; position:sticky; top:0}
+table.grid td.num, table.grid th.num{text-align:right; font-variant-numeric:tabular-nums}
+table.grid tbody tr:hover{background:#fafbff}
+table.grid tfoot td{font-weight:700; background:#f8faff}
+.badge{display:inline-block; padding:2px 9px; border-radius:999px; font-size:12px; font-weight:600}
+.badge-on{background:#e6f6ee; color:var(--ok)}
+.badge-off{background:#f0f2f6; color:var(--muted)}
+
+.stats{display:flex; gap:10px; flex-wrap:wrap; margin:10px 0 14px}
+.stat{
+  background:var(--accent-soft); border-radius:10px; padding:9px 14px; min-width:130px;
+}
+.stat b{display:block; font-size:18px; font-variant-numeric:tabular-nums}
+.stat span{font-size:12px; color:var(--muted)}
+
+/* ---------- Toast ---------- */
+.toast{
+  position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px);
+  background:#1a2233; color:#fff; padding:11px 18px; border-radius:10px;
+  font-size:14px; opacity:0; pointer-events:none; transition:.25s; z-index:99; max-width:90vw;
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+.toast.err{background:var(--err)}
+.toast.ok{background:var(--ok)}
+
+
+/* ---------- ตัวช่วยต่อ API (หน้าตั้งค่า) ---------- */
+.steps{margin:0 0 18px; padding-left:22px; font-size:14px; line-height:1.75}
+.steps li{margin-bottom:9px}
+.steps li::marker{color:var(--accent); font-weight:700}
+.steps .hint{margin-top:2px}
+code{background:#eef2fa; color:#2b3a55; padding:1px 6px; border-radius:5px; font-size:13px; font-family:Consolas,"Courier New",monospace}
+
+/* ===========================================================
+   INVOICE — ต้องเหมือนรูปตัวอย่าง 100%
+   กว้าง 1045px = พอดี A4 แนวนอน (297mm - ขอบ 10mm)
+   =========================================================== */
+.invoice-wrap{
+  overflow-x:auto;
+  padding:6px;
+}
+.empty-state{
+  border:2px dashed #cfd8ea; border-radius:var(--radius);
+  padding:60px 20px; text-align:center; color:var(--muted); background:#fff;
+}
+
+.invoice{
+  --inv-font:24px;                 /* ปรับได้ในหน้า "ตั้งค่า" */
+  --inv-head-font:calc(var(--inv-font) * 1.17);
+  width:1045px;
+  background:#fff;
+  border:2px solid var(--frame);
+  padding:20px 20px 8px;
+  font-family:"Angsana New","AngsanaUPC","TH Sarabun New","Sarabun",serif;
+  color:#000;
+  font-size:var(--inv-font);
+  line-height:1.1;
+}
+
+/* --- ส่วนหัว --- */
+.inv-head{display:flex; align-items:flex-start; gap:20px}
+.inv-head-left{flex:1 1 62%; min-width:0}
+.inv-head-right{flex:0 0 34%}
+
+.loc-box{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  max-width:558px; min-height:34px;
+  border:1px solid #b9b9b9; background:#f2f2f2;
+  padding:2px 10px; font-weight:700; font-size:var(--inv-head-font);
+}
+.loc-box > span:first-child{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.loc-box .caret{font-size:13px; color:#333; line-height:1; flex:0 0 auto}
+
+.inv-addr{margin-top:12px}
+.inv-cust{margin-top:12px; display:flex}
+.inv-cust .cust-label{flex:0 0 236px}
+.inv-cust .cust-name{flex:1 1 auto; min-width:0}
+
+.inv-title{font-weight:700; font-size:var(--inv-head-font); text-align:center; padding-right:138px}
+.inv-meta{display:flex; margin-top:9px}
+.inv-title + .inv-meta{margin-top:28px}
+.inv-meta .lbl{flex:0 0 145px}
+.inv-meta .val{flex:1 1 auto}
+
+/* --- ตารางรายการ --- */
+.inv-table{
+  width:100%; border-collapse:collapse; table-layout:fixed;
+  margin-top:38px;
+}
+.inv-table th, .inv-table td{
+  border:1px solid var(--accent);
+  padding:0 8px;
+  height:28px;
+  overflow:hidden;
+}
+.inv-table thead th{
+  background:var(--accent); color:#fff; font-weight:700; text-align:center;
+  height:34px;
+}
+.inv-table td.c-no{text-align:center; width:13.3%}
+.inv-table td.c-item{text-align:left;   width:43.4%}
+.inv-table td.c-qty{text-align:center;  width:10.2%}
+.inv-table td.c-water{text-align:center;width:13.4%}
+.inv-table td.c-elec{text-align:center; width:10.4%}
+.inv-table td.c-total{text-align:center;width:9.3%}
+
+/* --- แถวรวม (ไม่มีเส้น) --- */
+.inv-sum{width:100%; border-collapse:collapse; table-layout:fixed; margin-top:31px}
+.inv-sum td{border:0; padding:0 8px; height:28px}
+.inv-sum .s-no{width:13.3%}
+.inv-sum .s-item{width:43.4%}
+.inv-sum .s-qty{width:10.2%;  text-align:center}
+.inv-sum .s-water{width:13.4%;text-align:center}
+.inv-sum .s-elec{width:10.4%; text-align:center}
+.inv-sum .s-total{width:9.3%}
+
+.inv-grand{display:flex; align-items:baseline; margin-top:8px}
+.inv-grand .g-label{flex:0 0 48%;  text-align:right; font-weight:700; padding-right:6px}
+.inv-grand .g-text{flex:0 0 42%;   text-align:center; font-weight:700}
+.inv-grand .g-amount{flex:0 0 10%; text-align:center; font-weight:700}
+
+/* --- ท้ายบิล --- */
+.inv-foot{display:flex; gap:20px; margin-top:22px}
+.inv-foot-left{flex:1 1 62%}
+.inv-foot-right{flex:0 0 34%}
+.foot-title{font-weight:700}
+.foot-line{margin-top:8px}
+.foot-highlight{
+  display:block; margin-top:8px;
+  background:#ffff00; padding:2px 6px; width:400px; max-width:100%;
+}
+.bank-head{margin-top:0; color:#000; font-weight:400}
+.bank-line{margin-top:8px; font-weight:700; color:var(--bank)}
+
+/* ===========================================================
+   PRINT — A4 แนวนอน เต็มความกว้างพอดี
+   =========================================================== */
+@page{ size:A4 landscape; margin:10mm; }
+
+@media print{
+  .no-print, .topbar, .toast{display:none !important}
+  body{background:#fff}
+  main{padding:0; max-width:none}
+  .page{display:none !important}
+  .page.is-active{display:block !important}
+  .grid-report{display:block; gap:0}
+  .invoice-wrap{overflow:visible; padding:0}
+  .invoice{
+    width:100%; border:2px solid var(--frame);
+    page-break-inside:avoid; break-inside:avoid;
+  }
+  .card{display:none !important}
+}

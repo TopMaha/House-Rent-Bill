@@ -1,0 +1,21 @@
+# ตั้งค่า Cloudflare Worker — House Rent Bill API
+#
+# ⚠️ ห้ามใส่ค่าลับในไฟล์นี้ ไฟล์นี้ถูก commit ขึ้น repo
+#    ถ้าจะล็อก API ให้ตั้งด้วย `npx wrangler secret put AUTH_TOKEN`
+#    แล้วกรอกรหัสเดียวกันในช่อง Token ของหน้า "ตั้งค่า" ในเว็บ
+
+name = "house-rent-bill-api"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# ── ฐานข้อมูล D1 ────────────────────────────────────────────────────────
+[[d1_databases]]
+binding = "DB"
+database_name = "house-rent-bill"
+database_id = "2b2af01c-74c8-48f5-bffa-cfc730490f28"
+
+# ── ตัวแปรทั่วไป (ไม่ลับ) ────────────────────────────────────────────────
+# origin ที่อนุญาตให้เรียก API ได้ ใส่หลายค่าคั่นด้วยจุลภาค ไม่ต้องมี / ต่อท้าย
+# "*" = อนุญาตทุก origin (เผื่อเปิด index.html จากเครื่องตรงๆ ซึ่ง Origin เป็น null)
+[vars]
+ALLOWED_ORIGIN = "*"

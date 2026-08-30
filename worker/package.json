@@ -1,0 +1,13 @@
+{
+  "name": "house-rent-bill-api",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:schema": "wrangler d1 execute house-rent-bill --remote --file=schema.sql",
+    "db:seed": "wrangler d1 execute house-rent-bill --remote --file=seed.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

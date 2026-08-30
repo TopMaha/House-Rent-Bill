@@ -1,0 +1,7 @@
+node_modules/
+.DS_Store
+Thumbs.db
+.clasp.json
+.clasprc.json
+.wrangler/
+.dev.vars

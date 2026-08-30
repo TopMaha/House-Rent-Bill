@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>House Rent Bill — ระบบออกใบแจ้งหนี้ค่าเช่า</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="topbar no-print">
+  <div class="brand">
+    <span class="brand-mark">HRB</span>
+    <div>
+      <div class="brand-title">House Rent Bill</div>
+      <div class="brand-sub">ระบบออกใบแจ้งหนี้ค่าเช่าบ้าน / คอนโด</div>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab is-active" data-page="report">ออกบิล (Report)</button>
+    <button class="tab" data-page="data">ข้อมูลย้อนหลัง (Data)</button>
+    <button class="tab" data-page="places">สถานที่เช่า</button>
+    <button class="tab" data-page="tenants">ผู้เช่า</button>
+    <button class="tab" data-page="settings">ตั้งค่า</button>
+  </nav>
+  <div class="conn" id="conn" title="สถานะการเชื่อมต่อฐานข้อมูล Cloudflare D1">
+    <span class="dot"></span><span class="conn-text">ยังไม่เชื่อมต่อ</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ PAGE: REPORT ============ -->
+  <section class="page is-active" id="page-report">
+    <div class="grid-report">
+
+      <div class="card no-print" id="billForm">
+        <h2 class="card-title">กรอกข้อมูลบิล</h2>
+
+        <label class="field">
+          <span class="field-label">สถานที่ (Location)</span>
+          <select id="f-location"></select>
+        </label>
+
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">วันที่ออกบิล</span>
+            <input type="date" id="f-billdate">
+          </label>
+          <label class="field">
+            <span class="field-label">กำหนดชำระ (วันที่ 5 ของเดือนถัดไป)</span>
+            <input type="text" id="f-duedate" readonly>
+          </label>
+        </div>
+
+        <label class="field">
+          <span class="field-label">ผู้เช่า (Customer)</span>
+          <input type="text" id="f-customer" list="tenant-list" placeholder="ชื่อผู้เช่า">
+          <datalist id="tenant-list"></datalist>
+          <span class="hint" id="hint-customer"></span>
+        </label>
+
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">ค่าเช่า (บาท)</span>
+            <input type="number" id="f-rent" step="0.01" min="0" placeholder="0.00">
+          </label>
+          <label class="field">
+            <span class="field-label">ค่าน้ำ (บาท)</span>
+            <input type="number" id="f-water" step="0.01" min="0" placeholder="0.00">
+          </label>
+          <label class="field">
+            <span class="field-label">ค่าไฟฟ้า (บาท)</span>
+            <input type="number" id="f-elec" step="0.01" min="0" placeholder="0.00">
+          </label>
+        </div>
+
+        <label class="check">
+          <input type="checkbox" id="f-nowater" checked>
+          <span>ยังไม่รวมค่าน้ำ (เว้นช่องค่าน้ำ + แสดงหมายเหตุไฮไลต์เหลือง)</span>
+        </label>
+
+        <details class="more">
+          <summary>รายการเพิ่มเติม (ไม่บังคับ)</summary>
+          <div class="field-row">
+            <label class="field">
+              <span class="field-label">ส่วนลดค่าน้ำ</span>
+              <input type="number" id="f-dis-water" step="0.01" min="0" placeholder="0.00">
+            </label>
+            <label class="field">
+              <span class="field-label">ส่วนลดค่าไฟฟ้า</span>
+              <input type="number" id="f-dis-elec" step="0.01" min="0" placeholder="0.00">
+            </label>
+            <label class="field">
+              <span class="field-label">ค่าใช้จ่ายอื่นๆ</span>
+              <input type="number" id="f-other" step="0.01" placeholder="0.00">
+            </label>
+          </div>
+          <label class="field">
+            <span class="field-label">ข้อความหมายเหตุเพิ่มเติม (บรรทัดล่าง "ชำระภายในวันที่...")</span>
+            <input type="text" id="f-note" placeholder="เว้นว่างได้">
+          </label>
+        </details>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="btn-report">ออกรายงาน (Report)</button>
+          <button class="btn" id="btn-save">บันทึกลงฐานข้อมูล</button>
+          <button class="btn" id="btn-print">พิมพ์ / บันทึก PDF</button>
+        </div>
+        <p class="hint" id="save-hint">ปุ่ม “บันทึกลงฐานข้อมูล” จะเขียนลงตาราง <b>bills</b> บน Cloudflare D1 — ถ้าเคยออกบิลของสถานที่นี้ในวันเดียวกันแล้ว ระบบจะอัปเดตทับแถวเดิมให้</p>
+      </div>
+
+      <div class="invoice-wrap" id="invoiceHost">
+        <div class="empty-state no-print">กดปุ่ม “ออกรายงาน (Report)” เพื่อสร้างใบแจ้งหนี้</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ PAGE: DATA ============ -->
+  <section class="page" id="page-data">
+    <div class="card">
+      <div class="card-head">
+        <h2 class="card-title">ข้อมูลย้อนหลัง (ตาราง bills)</h2>
+        <button class="btn btn-sm" id="btn-refresh-data">รีเฟรชจากฐานข้อมูล</button>
+      </div>
+      <div class="filters">
+        <label class="field">
+          <span class="field-label">สถานที่</span>
+          <select id="d-location"><option value="">ทั้งหมด</option></select>
+        </label>
+        <label class="field">
+          <span class="field-label">ปี</span>
+          <select id="d-year"><option value="">ทั้งหมด</option></select>
+        </label>
+        <label class="field">
+          <span class="field-label">ค้นหาชื่อผู้เช่า</span>
+          <input type="search" id="d-search" placeholder="พิมพ์ชื่อ...">
+        </label>
+      </div>
+      <div class="stats" id="d-stats"></div>
+      <div class="table-scroll">
+        <table class="grid" id="d-table">
+          <thead>
+            <tr>
+              <th>วันที่</th><th>สถานที่</th><th>ผู้เช่า</th>
+              <th class="num">ค่าเช่า</th><th class="num">ค่าน้ำ</th><th class="num">ค่าไฟฟ้า</th><th class="num">รวม</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAGE: PLACES ============ -->
+  <section class="page" id="page-places">
+    <div class="card">
+      <h2 class="card-title">สถานที่เช่า (ตาราง locations)</h2>
+      <div class="table-scroll">
+        <table class="grid" id="p-table">
+          <thead><tr><th>Location</th><th>Additional Details</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h2 class="card-title">เพิ่มสถานที่ใหม่</h2>
+      <div class="field-row">
+        <label class="field"><span class="field-label">ชื่อสถานที่</span><input type="text" id="p-location" placeholder="เช่น หมู่บ้าน... บ้านเลขที่ 999/99"></label>
+        <label class="field"><span class="field-label">รายละเอียด / ที่อยู่</span><input type="text" id="p-detail" placeholder="ซอย ตำบล อำเภอ จังหวัด"></label>
+      </div>
+      <button class="btn btn-primary" id="btn-add-place">เพิ่มลงฐานข้อมูล</button>
+    </div>
+  </section>
+
+  <!-- ============ PAGE: TENANTS ============ -->
+  <section class="page" id="page-tenants">
+    <div class="card">
+      <h2 class="card-title">ผู้เช่า (ตาราง tenants)</h2>
+      <div class="table-scroll">
+        <table class="grid" id="t-table">
+          <thead><tr><th>Location</th><th>Name</th><th>Date IN</th><th>Date OUT</th><th class="num">Booking Deposit</th><th>สถานะ</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h2 class="card-title">เพิ่มผู้เช่าใหม่</h2>
+      <div class="field-row">
+        <label class="field"><span class="field-label">สถานที่</span><select id="t-location"></select></label>
+        <label class="field"><span class="field-label">ชื่อผู้เช่า</span><input type="text" id="t-name"></label>
+      </div>
+      <div class="field-row">
+        <label class="field"><span class="field-label">วันที่เข้า (Date IN)</span><input type="date" id="t-in"></label>
+        <label class="field"><span class="field-label">วันที่ออก (Date OUT)</span><input type="date" id="t-out"></label>
+        <label class="field"><span class="field-label">เงินมัดจำ</span><input type="number" id="t-deposit" step="0.01"></label>
+      </div>
+      <button class="btn btn-primary" id="btn-add-tenant">เพิ่มลงฐานข้อมูล</button>
+    </div>
+  </section>
+
+  <!-- ============ PAGE: SETTINGS ============ -->
+  <section class="page" id="page-settings">
+    <div class="card">
+      <h2 class="card-title">เชื่อมต่อฐานข้อมูล (Cloudflare D1)</h2>
+      <p class="hint">ข้อมูลทั้งหมดย้ายจาก Google Sheet มาอยู่บนฐานข้อมูล <b>D1</b> ชื่อ <code>house-rent-bill</code> แล้ว
+        เว็บคุยกับฐานข้อมูลผ่าน Worker API ที่ตั้งไว้ให้แล้วในไฟล์ <code>js/config.js</code> — ปกติไม่ต้องแก้อะไรตรงนี้</p>
+      <label class="field">
+        <span class="field-label">Worker API URL</span>
+        <input type="url" id="s-api" placeholder="https://house-rent-bill-api.xxxx.workers.dev">
+      </label>
+      <label class="field">
+        <span class="field-label">Token (ถ้าตั้ง AUTH_TOKEN ไว้ที่ Worker)</span>
+        <input type="text" id="s-token" placeholder="เว้นว่างถ้าไม่ได้ตั้ง">
+      </label>
+      <div class="actions">
+        <button class="btn btn-primary" id="btn-test">ทดสอบการเชื่อมต่อ</button>
+        <button class="btn" id="btn-reload">โหลดข้อมูลใหม่ทั้งหมด</button>
+      </div>
+      <p class="hint">โค้ดฝั่งเซิร์ฟเวอร์อยู่ในโฟลเดอร์ <code>worker/</code> — แก้แล้วสั่ง <code>npx wrangler deploy</code> เพื่ออัปเดต
+        (วิธีติดตั้งทั้งหมดดูใน README.md)</p>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">ข้อมูลบัญชีรับชำระ (แสดงท้ายใบแจ้งหนี้)</h2>
+      <div class="field-row">
+        <label class="field"><span class="field-label">บรรทัดหัวข้อ</span><input type="text" id="s-payhead"></label>
+        <label class="field"><span class="field-label">เลขที่บัญชี</span><input type="text" id="s-account"></label>
+      </div>
+      <div class="field-row">
+        <label class="field"><span class="field-label">ธนาคาร</span><input type="text" id="s-bank"></label>
+        <label class="field"><span class="field-label">ชื่อบัญชี</span><input type="text" id="s-payee"></label>
+      </div>
+      <div class="field-row">
+        <label class="field"><span class="field-label">ข้อความไฮไลต์เหลือง</span><input type="text" id="s-highlight"></label>
+        <label class="field"><span class="field-label">ขนาดตัวอักษรใบแจ้งหนี้ (px)</span><input type="number" id="s-font" min="14" max="40" step="1"></label>
+      </div>
+      <div class="field-row">
+        <label class="field"><span class="field-label">ปี พ.ศ. / ค.ศ. บนใบแจ้งหนี้</span>
+          <select id="s-era"><option value="ce">ค.ศ. (2026 — ตามรูปตัวอย่าง)</option><option value="be">พ.ศ. (2569)</option></select>
+        </label>
+      </div>
+      <button class="btn btn-primary" id="btn-save-settings">บันทึกการตั้งค่า</button>
+    </div>
+  </section>
+
+</main>
+
+<div id="toast" class="toast no-print"></div>
+
+<script src="js/config.js"></script>
+<script src="js/bahttext.js"></script>
+<script src="js/seed-data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/invoice.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
