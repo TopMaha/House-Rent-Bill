@@ -2,132 +2,241 @@
 <html lang="th">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>House Rent Bill — ระบบออกใบแจ้งหนี้ค่าเช่า</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>House Rent Bill — ออกบิลค่าเช่า</title>
+<meta name="description" content="ออกใบแจ้งหนี้ค่าเช่าบ้าน/คอนโด ดูข้อมูลย้อนหลัง และจัดการผู้เช่า">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#1E3A5F" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1B31" media="(prefers-color-scheme: dark)">
+
+<!-- ติดตั้งเป็นแอปบนมือถือ (PWA) -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ค่าเช่าบ้าน">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
+<!-- ไอคอนทั้งหมด (Lucide, เส้น 2px) เรียกใช้ด้วย <svg class="ic"><use href="#i-..."/></svg> -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></symbol>
+  <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></symbol>
+  <symbol id="i-house" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="m16 6-4-4-4 4"/><path d="M12 2v13"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-droplet" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-maximize" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></symbol>
+  <symbol id="i-minimize" viewBox="0 0 24 24"><path d="M4 14h6v6"/><path d="M20 10h-6V4"/><path d="M14 10l7-7"/><path d="M3 21l7-7"/></symbol>
+  <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></symbol>
+  <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 2 3 7h18z"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></symbol>
+</svg>
+
+<a class="skip-link" href="#main">ข้ามไปที่เนื้อหา</a>
+
 <header class="topbar no-print">
   <div class="brand">
-    <span class="brand-mark">HRB</span>
-    <div>
+    <img class="brand-mark" src="icons/icon.svg" width="36" height="36" alt="">
+    <div class="brand-text">
       <div class="brand-title">House Rent Bill</div>
-      <div class="brand-sub">ระบบออกใบแจ้งหนี้ค่าเช่าบ้าน / คอนโด</div>
+      <div class="brand-sub">ระบบออกใบแจ้งหนี้ค่าเช่า</div>
     </div>
   </div>
-  <nav class="tabs" id="tabs">
-    <button class="tab is-active" data-page="report">ออกบิล (Report)</button>
-    <button class="tab" data-page="data">ข้อมูลย้อนหลัง (Data)</button>
-    <button class="tab" data-page="places">สถานที่เช่า</button>
-    <button class="tab" data-page="tenants">ผู้เช่า</button>
-    <button class="tab" data-page="settings">ตั้งค่า</button>
+
+  <nav class="tabs" id="tabs" aria-label="เมนูหลัก">
+    <button class="tab is-active" data-page="report" aria-current="page"><svg class="ic" aria-hidden="true"><use href="#i-receipt"/></svg><span>ออกบิล</span></button>
+    <button class="tab" data-page="data"><svg class="ic" aria-hidden="true"><use href="#i-history"/></svg><span>ย้อนหลัง</span></button>
+    <button class="tab" data-page="places"><svg class="ic" aria-hidden="true"><use href="#i-house"/></svg><span>สถานที่</span></button>
+    <button class="tab" data-page="tenants"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg><span>ผู้เช่า</span></button>
+    <button class="tab" data-page="settings"><svg class="ic" aria-hidden="true"><use href="#i-settings"/></svg><span>ตั้งค่า</span></button>
   </nav>
-  <div class="conn" id="conn" title="สถานะการเชื่อมต่อฐานข้อมูล Cloudflare D1">
-    <span class="dot"></span><span class="conn-text">ยังไม่เชื่อมต่อ</span>
+
+  <div class="conn" id="conn" role="status" title="สถานะการเชื่อมต่อฐานข้อมูล Cloudflare D1">
+    <span class="dot" aria-hidden="true"></span><span class="conn-text">ยังไม่เชื่อมต่อ</span>
   </div>
 </header>
 
-<main>
+<main id="main">
+
+  <!-- แถบชวนติดตั้งเป็นแอป (โชว์เฉพาะตอนเปิดผ่านเบราว์เซอร์บนมือถือ) -->
+  <div class="install-banner no-print" id="installBanner" hidden>
+    <img src="icons/icon-192.png" width="44" height="44" alt="">
+    <div class="ib-text">
+      <b>ติดตั้งเป็นแอป</b>
+      <span>มีไอคอนบนหน้าโฮม กดแล้วเข้าได้ทันที</span>
+    </div>
+    <button class="btn btn-primary btn-sm" id="btn-install-banner">ติดตั้ง</button>
+    <button class="icon-btn" id="btn-install-dismiss" aria-label="ปิดแถบนี้"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+  </div>
 
   <!-- ============ PAGE: REPORT ============ -->
-  <section class="page is-active" id="page-report">
+  <section class="page is-active" id="page-report" aria-labelledby="h-report">
+    <div class="page-head no-print">
+      <div>
+        <h1 id="h-report" tabindex="-1">ออกบิลค่าเช่า</h1>
+        <p>เลือกสถานที่ กรอกค่าน้ำ–ค่าไฟ แล้วกดออกรายงาน</p>
+      </div>
+    </div>
+
     <div class="grid-report">
 
-      <div class="card no-print" id="billForm">
-        <h2 class="card-title">กรอกข้อมูลบิล</h2>
+      <div class="card form-card no-print" id="billForm">
 
         <label class="field">
-          <span class="field-label">สถานที่ (Location)</span>
+          <span class="field-label"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-pin"/></svg>สถานที่</span>
           <select id="f-location"></select>
         </label>
+        <p class="last-bill" id="lastBill" hidden></p>
 
         <div class="field-row">
           <label class="field">
-            <span class="field-label">วันที่ออกบิล</span>
+            <span class="field-label"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-calendar"/></svg>วันที่ออกบิล</span>
             <input type="date" id="f-billdate">
           </label>
           <label class="field">
-            <span class="field-label">กำหนดชำระ (วันที่ 5 ของเดือนถัดไป)</span>
-            <input type="text" id="f-duedate" readonly>
+            <span class="field-label">กำหนดชำระ</span>
+            <input type="text" id="f-duedate" readonly tabindex="-1" aria-describedby="due-help">
+            <span class="hint" id="due-help">วันที่ 5 ของเดือนถัดไป</span>
           </label>
         </div>
 
         <label class="field">
-          <span class="field-label">ผู้เช่า (Customer)</span>
-          <input type="text" id="f-customer" list="tenant-list" placeholder="ชื่อผู้เช่า">
+          <span class="field-label"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-user"/></svg>ผู้เช่า (Customer)</span>
+          <input type="text" id="f-customer" list="tenant-list" placeholder="ชื่อผู้เช่า" autocomplete="off">
           <datalist id="tenant-list"></datalist>
           <span class="hint" id="hint-customer"></span>
         </label>
 
-        <div class="field-row">
+        <div class="amounts">
           <label class="field">
-            <span class="field-label">ค่าเช่า (บาท)</span>
-            <input type="number" id="f-rent" step="0.01" min="0" placeholder="0.00">
+            <span class="field-label"><svg class="ic ic-sm tone-rent" aria-hidden="true"><use href="#i-house"/></svg>ค่าเช่า</span>
+            <span class="affix"><input type="number" inputmode="decimal" id="f-rent" step="0.01" min="0" placeholder="0.00"><span class="affix-unit">฿</span></span>
           </label>
           <label class="field">
-            <span class="field-label">ค่าน้ำ (บาท)</span>
-            <input type="number" id="f-water" step="0.01" min="0" placeholder="0.00">
+            <span class="field-label"><svg class="ic ic-sm tone-water" aria-hidden="true"><use href="#i-droplet"/></svg>ค่าน้ำ</span>
+            <span class="affix"><input type="number" inputmode="decimal" id="f-water" step="0.01" min="0" placeholder="0.00"><span class="affix-unit">฿</span></span>
           </label>
           <label class="field">
-            <span class="field-label">ค่าไฟฟ้า (บาท)</span>
-            <input type="number" id="f-elec" step="0.01" min="0" placeholder="0.00">
+            <span class="field-label"><svg class="ic ic-sm tone-elec" aria-hidden="true"><use href="#i-zap"/></svg>ค่าไฟฟ้า</span>
+            <span class="affix"><input type="number" inputmode="decimal" id="f-elec" step="0.01" min="0" placeholder="0.00"><span class="affix-unit">฿</span></span>
           </label>
         </div>
 
-        <label class="check">
-          <input type="checkbox" id="f-nowater" checked>
-          <span>ยังไม่รวมค่าน้ำ (เว้นช่องค่าน้ำ + แสดงหมายเหตุไฮไลต์เหลือง)</span>
+        <label class="switch-row">
+          <span class="switch-text">
+            <b>ยังไม่รวมค่าน้ำ</b>
+            <small>เว้นช่องค่าน้ำ และแสดงหมายเหตุไฮไลต์เหลืองท้ายบิล</small>
+          </span>
+          <input type="checkbox" class="switch" id="f-nowater" checked>
         </label>
 
         <details class="more">
-          <summary>รายการเพิ่มเติม (ไม่บังคับ)</summary>
-          <div class="field-row">
+          <summary><span>รายการเพิ่มเติม (ไม่บังคับ)</span><svg class="ic ic-sm chev" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+          <div class="more-body">
+            <div class="amounts">
+              <label class="field">
+                <span class="field-label">ส่วนลดค่าน้ำ</span>
+                <span class="affix"><input type="number" inputmode="decimal" id="f-dis-water" step="0.01" min="0" placeholder="0.00"><span class="affix-unit">฿</span></span>
+              </label>
+              <label class="field">
+                <span class="field-label">ส่วนลดค่าไฟฟ้า</span>
+                <span class="affix"><input type="number" inputmode="decimal" id="f-dis-elec" step="0.01" min="0" placeholder="0.00"><span class="affix-unit">฿</span></span>
+              </label>
+              <label class="field">
+                <span class="field-label">ค่าใช้จ่ายอื่นๆ</span>
+                <span class="affix"><input type="number" inputmode="decimal" id="f-other" step="0.01" placeholder="0.00"><span class="affix-unit">฿</span></span>
+              </label>
+            </div>
             <label class="field">
-              <span class="field-label">ส่วนลดค่าน้ำ</span>
-              <input type="number" id="f-dis-water" step="0.01" min="0" placeholder="0.00">
-            </label>
-            <label class="field">
-              <span class="field-label">ส่วนลดค่าไฟฟ้า</span>
-              <input type="number" id="f-dis-elec" step="0.01" min="0" placeholder="0.00">
-            </label>
-            <label class="field">
-              <span class="field-label">ค่าใช้จ่ายอื่นๆ</span>
-              <input type="number" id="f-other" step="0.01" placeholder="0.00">
+              <span class="field-label">หมายเหตุเพิ่มเติม (บรรทัดใต้ “ชำระภายในวันที่...”)</span>
+              <input type="text" id="f-note" placeholder="เว้นว่างได้">
             </label>
           </div>
-          <label class="field">
-            <span class="field-label">ข้อความหมายเหตุเพิ่มเติม (บรรทัดล่าง "ชำระภายในวันที่...")</span>
-            <input type="text" id="f-note" placeholder="เว้นว่างได้">
-          </label>
         </details>
 
-        <div class="actions">
-          <button class="btn btn-primary" id="btn-report">ออกรายงาน (Report)</button>
-          <button class="btn" id="btn-save">บันทึกลงฐานข้อมูล</button>
-          <button class="btn" id="btn-print">พิมพ์ / บันทึก PDF</button>
+        <div class="total-box" aria-live="polite">
+          <div>
+            <span class="tb-label">ยอดรวมทั้งสิ้น</span>
+            <span class="tb-words" id="f-total-words"></span>
+          </div>
+          <div class="tb-amount"><b id="f-total">0.00</b><small>บาท</small></div>
         </div>
-        <p class="hint" id="save-hint">ปุ่ม “บันทึกลงฐานข้อมูล” จะเขียนลงตาราง <b>bills</b> บน Cloudflare D1 — ถ้าเคยออกบิลของสถานที่นี้ในวันเดียวกันแล้ว ระบบจะอัปเดตทับแถวเดิมให้</p>
+
+        <div class="actions">
+          <button class="btn btn-primary btn-block" id="btn-report"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg><span>ออกรายงาน (Report)</span></button>
+          <div class="actions-sub">
+            <button class="btn btn-tonal" id="btn-save"><svg class="ic" aria-hidden="true"><use href="#i-save"/></svg><span>บันทึก<span class="hide-sm">ลงฐานข้อมูล</span></span></button>
+            <button class="btn btn-outline" id="btn-print"><svg class="ic" aria-hidden="true"><use href="#i-print"/></svg><span>พิมพ์ / PDF</span></button>
+          </div>
+        </div>
+        <p class="hint" id="save-hint">“บันทึกลงฐานข้อมูล” จะเขียนลงตาราง <b>bills</b> บน Cloudflare D1 — ถ้าเคยออกบิลของสถานที่นี้ในวันเดียวกันแล้ว ระบบจะอัปเดตทับแถวเดิมให้</p>
       </div>
 
-      <div class="invoice-wrap" id="invoiceHost">
-        <div class="empty-state no-print">กดปุ่ม “ออกรายงาน (Report)” เพื่อสร้างใบแจ้งหนี้</div>
+      <div class="preview-col" id="previewCol">
+        <div class="preview-head no-print">
+          <h2>ตัวอย่างใบแจ้งหนี้</h2>
+          <button class="btn btn-ghost btn-sm" id="btn-zoom" hidden aria-pressed="false">
+            <svg class="ic ic-sm" aria-hidden="true"><use href="#i-maximize"/></svg><span>ขนาดจริง</span>
+          </button>
+        </div>
+        <div class="invoice-wrap" id="invoiceHost">
+          <div class="empty-state no-print">
+            <span class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-receipt"/></svg></span>
+            <b>ยังไม่มีใบแจ้งหนี้</b>
+            <span>กรอกข้อมูลแล้วกด “ออกรายงาน (Report)”</span>
+          </div>
+        </div>
       </div>
 
     </div>
   </section>
 
   <!-- ============ PAGE: DATA ============ -->
-  <section class="page" id="page-data">
-    <div class="card">
-      <div class="card-head">
-        <h2 class="card-title">ข้อมูลย้อนหลัง (ตาราง bills)</h2>
-        <button class="btn btn-sm" id="btn-refresh-data">รีเฟรชจากฐานข้อมูล</button>
+  <section class="page" id="page-data" aria-labelledby="h-data">
+    <div class="page-head">
+      <div>
+        <h1 id="h-data" tabindex="-1">ข้อมูลย้อนหลัง</h1>
+        <p id="d-sub">บิลทั้งหมดจากฐานข้อมูล</p>
       </div>
+      <button class="btn btn-outline btn-sm" id="btn-refresh-data"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-refresh"/></svg><span>รีเฟรช</span></button>
+    </div>
+
+    <div class="summary" id="d-stats"></div>
+
+    <div class="card card-flush">
       <div class="filters">
+        <label class="field f-search">
+          <span class="field-label">ค้นหาชื่อผู้เช่า</span>
+          <span class="affix affix-left"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-search"/></svg><input type="search" id="d-search" placeholder="พิมพ์ชื่อ..."></span>
+        </label>
         <label class="field">
           <span class="field-label">สถานที่</span>
           <select id="d-location"><option value="">ทั้งหมด</option></select>
@@ -136,19 +245,14 @@
           <span class="field-label">ปี</span>
           <select id="d-year"><option value="">ทั้งหมด</option></select>
         </label>
-        <label class="field">
-          <span class="field-label">ค้นหาชื่อผู้เช่า</span>
-          <input type="search" id="d-search" placeholder="พิมพ์ชื่อ...">
-        </label>
       </div>
-      <div class="stats" id="d-stats"></div>
       <div class="table-scroll">
-        <table class="grid" id="d-table">
+        <table class="grid bills" id="d-table">
           <thead>
             <tr>
-              <th>วันที่</th><th>สถานที่</th><th>ผู้เช่า</th>
-              <th class="num">ค่าเช่า</th><th class="num">ค่าน้ำ</th><th class="num">ค่าไฟฟ้า</th><th class="num">รวม</th>
-              <th></th>
+              <th scope="col">วันที่</th><th scope="col">สถานที่</th><th scope="col">ผู้เช่า</th>
+              <th scope="col" class="num">ค่าเช่า</th><th scope="col" class="num">ค่าน้ำ</th><th scope="col" class="num">ค่าไฟฟ้า</th><th scope="col" class="num">รวม</th>
+              <th scope="col"><span class="sr-only">จัดการ</span></th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -158,79 +262,142 @@
   </section>
 
   <!-- ============ PAGE: PLACES ============ -->
-  <section class="page" id="page-places">
-    <div class="card">
-      <h2 class="card-title">สถานที่เช่า (ตาราง locations)</h2>
-      <div class="table-scroll">
-        <table class="grid" id="p-table">
-          <thead><tr><th>Location</th><th>Additional Details</th></tr></thead>
-          <tbody></tbody>
-        </table>
+  <section class="page" id="page-places" aria-labelledby="h-places">
+    <div class="page-head">
+      <div>
+        <h1 id="h-places" tabindex="-1">สถานที่เช่า</h1>
+        <p id="p-sub">บ้าน / คอนโดที่ปล่อยเช่า (ตาราง locations)</p>
       </div>
     </div>
+    <ul class="list" id="p-list"></ul>
+
     <div class="card">
-      <h2 class="card-title">เพิ่มสถานที่ใหม่</h2>
+      <div class="card-title-row">
+        <span class="card-icon"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span>
+        <h2 class="card-title">เพิ่มสถานที่ใหม่</h2>
+      </div>
       <div class="field-row">
         <label class="field"><span class="field-label">ชื่อสถานที่</span><input type="text" id="p-location" placeholder="เช่น หมู่บ้าน... บ้านเลขที่ 999/99"></label>
         <label class="field"><span class="field-label">รายละเอียด / ที่อยู่</span><input type="text" id="p-detail" placeholder="ซอย ตำบล อำเภอ จังหวัด"></label>
       </div>
-      <button class="btn btn-primary" id="btn-add-place">เพิ่มลงฐานข้อมูล</button>
+      <button class="btn btn-primary" id="btn-add-place"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg><span>เพิ่มลงฐานข้อมูล</span></button>
     </div>
   </section>
 
   <!-- ============ PAGE: TENANTS ============ -->
-  <section class="page" id="page-tenants">
-    <div class="card">
-      <h2 class="card-title">ผู้เช่า (ตาราง tenants)</h2>
-      <div class="table-scroll">
-        <table class="grid" id="t-table">
-          <thead><tr><th>Location</th><th>Name</th><th>Date IN</th><th>Date OUT</th><th class="num">Booking Deposit</th><th>สถานะ</th></tr></thead>
-          <tbody></tbody>
-        </table>
+  <section class="page" id="page-tenants" aria-labelledby="h-tenants">
+    <div class="page-head">
+      <div>
+        <h1 id="h-tenants" tabindex="-1">ผู้เช่า</h1>
+        <p id="t-sub">ประวัติผู้เช่าทั้งหมด (ตาราง tenants)</p>
       </div>
     </div>
+    <ul class="list" id="t-list"></ul>
+
     <div class="card">
-      <h2 class="card-title">เพิ่มผู้เช่าใหม่</h2>
+      <div class="card-title-row">
+        <span class="card-icon"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span>
+        <h2 class="card-title">เพิ่มผู้เช่าใหม่</h2>
+      </div>
       <div class="field-row">
         <label class="field"><span class="field-label">สถานที่</span><select id="t-location"></select></label>
-        <label class="field"><span class="field-label">ชื่อผู้เช่า</span><input type="text" id="t-name"></label>
+        <label class="field"><span class="field-label">ชื่อผู้เช่า</span><input type="text" id="t-name" autocomplete="off"></label>
       </div>
       <div class="field-row">
         <label class="field"><span class="field-label">วันที่เข้า (Date IN)</span><input type="date" id="t-in"></label>
         <label class="field"><span class="field-label">วันที่ออก (Date OUT)</span><input type="date" id="t-out"></label>
-        <label class="field"><span class="field-label">เงินมัดจำ</span><input type="number" id="t-deposit" step="0.01"></label>
+        <label class="field"><span class="field-label">เงินมัดจำ</span><span class="affix"><input type="number" inputmode="decimal" id="t-deposit" step="0.01" placeholder="0.00"><span class="affix-unit">฿</span></span></label>
       </div>
-      <button class="btn btn-primary" id="btn-add-tenant">เพิ่มลงฐานข้อมูล</button>
+      <button class="btn btn-primary" id="btn-add-tenant"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg><span>เพิ่มลงฐานข้อมูล</span></button>
     </div>
   </section>
 
   <!-- ============ PAGE: SETTINGS ============ -->
-  <section class="page" id="page-settings">
-    <div class="card">
-      <h2 class="card-title">เชื่อมต่อฐานข้อมูล (Cloudflare D1)</h2>
-      <p class="hint">ข้อมูลทั้งหมดย้ายจาก Google Sheet มาอยู่บนฐานข้อมูล <b>D1</b> ชื่อ <code>house-rent-bill</code> แล้ว
-        เว็บคุยกับฐานข้อมูลผ่าน Worker API ที่ตั้งไว้ให้แล้วในไฟล์ <code>js/config.js</code> — ปกติไม่ต้องแก้อะไรตรงนี้</p>
-      <label class="field">
-        <span class="field-label">Worker API URL</span>
-        <input type="url" id="s-api" placeholder="https://house-rent-bill-api.xxxx.workers.dev">
-      </label>
-      <label class="field">
-        <span class="field-label">Token (ถ้าตั้ง AUTH_TOKEN ไว้ที่ Worker)</span>
-        <input type="text" id="s-token" placeholder="เว้นว่างถ้าไม่ได้ตั้ง">
-      </label>
-      <div class="actions">
-        <button class="btn btn-primary" id="btn-test">ทดสอบการเชื่อมต่อ</button>
-        <button class="btn" id="btn-reload">โหลดข้อมูลใหม่ทั้งหมด</button>
+  <section class="page" id="page-settings" aria-labelledby="h-settings">
+    <div class="page-head">
+      <div>
+        <h1 id="h-settings" tabindex="-1">ตั้งค่า</h1>
+        <p>ติดตั้งแอป เชื่อมต่อฐานข้อมูล และข้อมูลท้ายใบแจ้งหนี้</p>
       </div>
-      <p class="hint">โค้ดฝั่งเซิร์ฟเวอร์อยู่ในโฟลเดอร์ <code>worker/</code> — แก้แล้วสั่ง <code>npx wrangler deploy</code> เพื่ออัปเดต
-        (วิธีติดตั้งทั้งหมดดูใน README.md)</p>
+    </div>
+
+    <div class="card install-card" id="installCard">
+      <div class="install-top">
+        <img class="app-icon" src="icons/icon-192.png" width="64" height="64" alt="">
+        <div>
+          <h2 class="card-title">ใช้เป็นแอปบนมือถือ</h2>
+          <p class="hint">ติดตั้งครั้งเดียว ไอคอน “ค่าเช่าบ้าน” จะอยู่บนหน้าโฮม กดแล้วเปิดเต็มจอเหมือนแอปทั่วไป</p>
+        </div>
+      </div>
+
+      <p class="installed-note" id="installedNote" hidden>
+        <svg class="ic ic-sm" aria-hidden="true"><use href="#i-check"/></svg>ตอนนี้เปิดอยู่ในโหมดแอปแล้ว
+      </p>
+
+      <div class="install-grid">
+        <figure class="qr-box">
+          <img src="icons/qr-app.svg" width="160" height="160" alt="QR code ลิงก์ของแอป House Rent Bill">
+          <figcaption>สแกนด้วยกล้องมือถือเพื่อเปิดแอป</figcaption>
+        </figure>
+
+        <div class="install-steps">
+          <button class="btn btn-primary" id="btn-install" hidden><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg><span>ติดตั้งแอปเลย</span></button>
+
+          <div class="platform">
+            <b><svg class="ic ic-sm" aria-hidden="true"><use href="#i-phone"/></svg>iPhone / iPad (Safari)</b>
+            <ol>
+              <li>แตะปุ่มแชร์ <svg class="ic ic-inline" aria-label="ปุ่มแชร์"><use href="#i-share"/></svg> ที่แถบล่างของ Safari</li>
+              <li>เลื่อนลงแล้วเลือก <b>“เพิ่มไปยังหน้าจอโฮม”</b></li>
+              <li>แตะ <b>“เพิ่ม”</b> มุมขวาบน</li>
+            </ol>
+          </div>
+          <div class="platform">
+            <b><svg class="ic ic-sm" aria-hidden="true"><use href="#i-phone"/></svg>Android (Chrome)</b>
+            <ol>
+              <li>แตะเมนู <svg class="ic ic-inline" aria-label="เมนูสามจุด"><use href="#i-more"/></svg> มุมขวาบน</li>
+              <li>เลือก <b>“ติดตั้งแอป”</b> หรือ <b>“เพิ่มลงในหน้าจอหลัก”</b></li>
+            </ol>
+          </div>
+
+          <div class="link-row">
+            <input type="text" id="appLink" readonly aria-label="ลิงก์ของแอป">
+            <button class="btn btn-outline btn-sm" id="btn-copy-link"><svg class="ic ic-sm" aria-hidden="true"><use href="#i-link"/></svg><span>คัดลอก</span></button>
+            <button class="btn btn-outline btn-sm" id="btn-share-link" hidden><svg class="ic ic-sm" aria-hidden="true"><use href="#i-share"/></svg><span>แชร์</span></button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="card">
-      <h2 class="card-title">ข้อมูลบัญชีรับชำระ (แสดงท้ายใบแจ้งหนี้)</h2>
+      <div class="card-title-row">
+        <span class="card-icon"><svg class="ic" aria-hidden="true"><use href="#i-activity"/></svg></span>
+        <h2 class="card-title">เชื่อมต่อฐานข้อมูล (Cloudflare D1)</h2>
+      </div>
+      <p class="hint">ข้อมูลทั้งหมดอยู่บนฐานข้อมูล <b>D1</b> ชื่อ <code>house-rent-bill</code> เว็บคุยกับฐานข้อมูลผ่าน Worker API
+        ที่ตั้งไว้ในไฟล์ <code>js/config.js</code> แล้ว — ปกติไม่ต้องแก้อะไรตรงนี้</p>
+      <label class="field">
+        <span class="field-label">Worker API URL</span>
+        <input type="url" id="s-api" placeholder="https://house-rent-bill-api.xxxx.workers.dev" autocomplete="off">
+      </label>
+      <label class="field">
+        <span class="field-label">Token (ถ้าตั้ง AUTH_TOKEN ไว้ที่ Worker)</span>
+        <input type="text" id="s-token" placeholder="เว้นว่างถ้าไม่ได้ตั้ง" autocomplete="off">
+      </label>
+      <div class="actions-inline">
+        <button class="btn btn-primary" id="btn-test"><svg class="ic" aria-hidden="true"><use href="#i-activity"/></svg><span>ทดสอบการเชื่อมต่อ</span></button>
+        <button class="btn btn-outline" id="btn-reload"><svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg><span>โหลดข้อมูลใหม่ทั้งหมด</span></button>
+      </div>
+      <p class="hint">โค้ดฝั่งเซิร์ฟเวอร์อยู่ในโฟลเดอร์ <code>worker/</code> — แก้แล้วสั่ง <code>npx wrangler deploy</code> เพื่ออัปเดต</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title-row">
+        <span class="card-icon"><svg class="ic" aria-hidden="true"><use href="#i-bank"/></svg></span>
+        <h2 class="card-title">ข้อมูลบัญชีรับชำระ (ท้ายใบแจ้งหนี้)</h2>
+      </div>
       <div class="field-row">
         <label class="field"><span class="field-label">บรรทัดหัวข้อ</span><input type="text" id="s-payhead"></label>
-        <label class="field"><span class="field-label">เลขที่บัญชี</span><input type="text" id="s-account"></label>
+        <label class="field"><span class="field-label">เลขที่บัญชี</span><input type="text" id="s-account" inputmode="numeric"></label>
       </div>
       <div class="field-row">
         <label class="field"><span class="field-label">ธนาคาร</span><input type="text" id="s-bank"></label>
@@ -238,26 +405,39 @@
       </div>
       <div class="field-row">
         <label class="field"><span class="field-label">ข้อความไฮไลต์เหลือง</span><input type="text" id="s-highlight"></label>
-        <label class="field"><span class="field-label">ขนาดตัวอักษรใบแจ้งหนี้ (px)</span><input type="number" id="s-font" min="14" max="40" step="1"></label>
+        <label class="field"><span class="field-label">ขนาดตัวอักษรใบแจ้งหนี้ (px)</span><input type="number" inputmode="numeric" id="s-font" min="14" max="40" step="1"></label>
       </div>
       <div class="field-row">
         <label class="field"><span class="field-label">ปี พ.ศ. / ค.ศ. บนใบแจ้งหนี้</span>
           <select id="s-era"><option value="ce">ค.ศ. (2026 — ตามรูปตัวอย่าง)</option><option value="be">พ.ศ. (2569)</option></select>
         </label>
       </div>
-      <button class="btn btn-primary" id="btn-save-settings">บันทึกการตั้งค่า</button>
+      <button class="btn btn-primary" id="btn-save-settings"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>บันทึกการตั้งค่า</span></button>
     </div>
   </section>
 
 </main>
 
-<div id="toast" class="toast no-print"></div>
+<!-- วิธีติดตั้งบน iPhone (Safari ไม่มีปุ่มติดตั้งให้กดจากหน้าเว็บ) -->
+<dialog class="sheet no-print" id="iosSheet" aria-labelledby="ios-title">
+  <div class="sheet-grip" aria-hidden="true"></div>
+  <h2 id="ios-title">เพิ่มลงหน้าจอโฮม</h2>
+  <ol class="sheet-steps">
+    <li><span class="step-no">1</span><span>แตะปุ่มแชร์ <svg class="ic ic-inline" aria-label="ปุ่มแชร์"><use href="#i-share"/></svg> ที่แถบล่างของ Safari</span></li>
+    <li><span class="step-no">2</span><span>เลื่อนลงแล้วเลือก <b>“เพิ่มไปยังหน้าจอโฮม”</b></span></li>
+    <li><span class="step-no">3</span><span>แตะ <b>“เพิ่ม”</b> — ไอคอน “ค่าเช่าบ้าน” จะไปอยู่บนหน้าโฮม</span></li>
+  </ol>
+  <form method="dialog"><button class="btn btn-primary btn-block">เข้าใจแล้ว</button></form>
+</dialog>
+
+<div id="toast" class="toast no-print" role="status" aria-live="polite"></div>
 
 <script src="js/config.js"></script>
 <script src="js/bahttext.js"></script>
 <script src="js/seed-data.js"></script>
 <script src="js/api.js"></script>
 <script src="js/invoice.js"></script>
+<script src="js/pwa.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

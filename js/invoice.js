@@ -3,6 +3,26 @@
    =========================================================== */
 
 /**
+ * ใบแจ้งหนี้ออกแบบมากับฟอนต์ Angsana New (มีใน Windows) — มือถือไม่มีฟอนต์นี้
+ * ถ้าหาไม่เจอ ให้ใช้ Sarabun แทนแต่ย่อลง (Sarabun ของ Google ตัวใหญ่กว่าราว 1.4 เท่า) ไม่งั้นข้อความจะล้นช่อง
+ */
+(function detectInvoiceFont(){
+  function hasLocalFont(name){
+    const ctx = document.createElement('canvas').getContext('2d');
+    if (!ctx) return true;
+    const sample = 'ใบแจ้งหนี้ Invoice 0123456789';
+    return ['monospace', 'serif', 'sans-serif'].some(base => {
+      ctx.font = '40px ' + base;
+      const w0 = ctx.measureText(sample).width;
+      ctx.font = '40px "' + name + '", ' + base;
+      return ctx.measureText(sample).width !== w0;
+    });
+  }
+  const ok = ['Angsana New', 'AngsanaUPC', 'TH Sarabun New'].some(hasLocalFont);
+  document.documentElement.classList.toggle('inv-no-angsana', !ok);
+})();
+
+/**
  * @param {object} m
  *  location, address, customer, billDate:Date,
  *  rent, water, elec, waterExcluded, disWater, disElec, other, note
