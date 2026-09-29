@@ -229,6 +229,7 @@ function readForm(){
     water: num($('#f-water').value),
     elec: num($('#f-elec').value),
     waterExcluded: $('#f-nowater').checked,
+    elecExcluded: $('#f-noelec').checked,
     disWater: num($('#f-dis-water').value),
     disElec: num($('#f-dis-elec').value),
     other: num($('#f-other').value),
@@ -239,7 +240,8 @@ function readForm(){
 /** สูตรเดียวกับ "รวมทั้งสิ้น" ใน invoice.js */
 function grandOf(m){
   const water = m.waterExcluded ? 0 : m.water;
-  return (m.rent + m.other) + (water - m.disWater) + (m.elec - m.disElec);
+  const elec  = m.elecExcluded  ? 0 : m.elec;
+  return (m.rent + m.other) + (water - m.disWater) + (elec - m.disElec);
 }
 
 function updateTotal(){
@@ -310,7 +312,7 @@ async function doSave(){
       name: m.customer,
       rent: m.rent,
       water: m.waterExcluded ? '' : m.water,
-      elec: m.elec,
+      elec: m.elecExcluded ? '' : m.elec,
       other: m.other,
       discount: m.disWater + m.disElec
     });
@@ -398,6 +400,7 @@ async function onDataTableClick(e){
     $('#f-water').value = num(r.water) || '';
     $('#f-elec').value  = num(r.elec)  || '';
     $('#f-nowater').checked = !num(r.water);
+    $('#f-noelec').checked  = !num(r.elec);
     renderLastBill();
     updateDue();
     updateTotal();
@@ -512,7 +515,7 @@ function fillSettings(){
   $('#s-account').value = s.account;
   $('#s-bank').value = s.bank;
   $('#s-payee').value = s.payee;
-  $('#s-highlight').value = s.highlight;
+  $('#s-highlight').value = s.highlightPrefix;
   $('#s-era').value = s.era;
   $('#s-font').value = s.invFont;
 }
@@ -525,7 +528,7 @@ function saveSettings(){
     account:  $('#s-account').value,
     bank:     $('#s-bank').value,
     payee:    $('#s-payee').value,
-    highlight:$('#s-highlight').value,
+    highlightPrefix: $('#s-highlight').value,
     era:      $('#s-era').value,
     invFont:  Math.min(40, Math.max(14, num($('#s-font').value) || 24))
   });
@@ -572,6 +575,9 @@ function init(){
   $('#f-billdate').addEventListener('change', () => { updateDue(); onLocationChange(); });
   $('#f-water').addEventListener('input', () => {
     if (num($('#f-water').value) > 0) $('#f-nowater').checked = false;
+  });
+  $('#f-elec').addEventListener('input', () => {
+    if (num($('#f-elec').value) > 0) $('#f-noelec').checked = false;
   });
   $('#billForm').addEventListener('input', updateTotal);
   $('#billForm').addEventListener('change', updateTotal);

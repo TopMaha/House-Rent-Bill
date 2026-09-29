@@ -25,7 +25,7 @@
 /**
  * @param {object} m
  *  location, address, customer, billDate:Date,
- *  rent, water, elec, waterExcluded, disWater, disElec, other, note
+ *  rent, water, elec, waterExcluded, elecExcluded, disWater, disElec, other, note
  */
 function buildInvoice(m){
   const s        = Settings.data;
@@ -35,7 +35,7 @@ function buildInvoice(m){
   const lastDay  = lastDayOfMonth(billDate);
 
   const rent      = num(m.rent);
-  const elec      = num(m.elec);
+  const elec      = m.elecExcluded ? 0 : num(m.elec);
   const water     = m.waterExcluded ? 0 : num(m.water);
   const disWater  = num(m.disWater);
   const disElec   = num(m.disElec);
@@ -58,7 +58,7 @@ function buildInvoice(m){
       item: `ค่าเช่าวันที่ 1 ${monthTxt} ถึง ${lastDay} ${monthTxt}`,
       qty: money(rent, true),
       water: m.waterExcluded ? '' : money(water, true),
-      elec: money(elec, true),
+      elec: m.elecExcluded ? '' : money(elec, true),
       total: money(row1Total, true)
     },
     {
@@ -92,8 +92,9 @@ function buildInvoice(m){
   const extraNote = m.note
     ? `<div class="foot-line">${escapeHtml(m.note)}</div>` : '';
 
-  const highlight = (m.waterExcluded && s.highlight)
-    ? `<span class="foot-highlight">${escapeHtml(s.highlight)}</span>` : '';
+  const notIncluded = [m.waterExcluded && 'ค่าน้ำ', m.elecExcluded && 'ค่าไฟฟ้า'].filter(Boolean);
+  const highlight = notIncluded.length
+    ? `<span class="foot-highlight">${escapeHtml((s.highlightPrefix || '') + notIncluded.join('-'))}</span>` : '';
 
   return `
 <div class="invoice" id="invoice" style="--inv-font:${s.invFont || 24}px">

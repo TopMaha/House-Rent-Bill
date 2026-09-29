@@ -8,7 +8,7 @@
    แก้ไฟล์ในรายการ ASSETS แล้วให้เลื่อน VERSION ขึ้นด้วย เพื่อล้างแคชชุดเก่า
    =========================================================== */
 
-const VERSION = 'hrb-v2';
+const VERSION = 'hrb-v3';
 const FONT_CACHE = 'hrb-fonts-v1';
 
 const ASSETS = [

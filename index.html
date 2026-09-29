@@ -157,6 +157,13 @@
           </span>
           <input type="checkbox" class="switch" id="f-nowater" checked>
         </label>
+        <label class="switch-row">
+          <span class="switch-text">
+            <b>ยังไม่รวมค่าไฟฟ้า</b>
+            <small>เว้นช่องค่าไฟฟ้า และแสดงหมายเหตุไฮไลต์เหลืองท้ายบิล</small>
+          </span>
+          <input type="checkbox" class="switch" id="f-noelec">
+        </label>
 
         <details class="more">
           <summary><span>รายการเพิ่มเติม (ไม่บังคับ)</span><svg class="ic ic-sm chev" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
@@ -404,7 +411,7 @@
         <label class="field"><span class="field-label">ชื่อบัญชี</span><input type="text" id="s-payee"></label>
       </div>
       <div class="field-row">
-        <label class="field"><span class="field-label">ข้อความไฮไลต์เหลือง</span><input type="text" id="s-highlight"></label>
+        <label class="field"><span class="field-label">คำนำหน้าไฮไลต์เหลือง</span><input type="text" id="s-highlight" aria-describedby="hl-help"><span class="hint" id="hl-help">ต่อท้ายให้เอง เช่น “ยังไม่รวมค่าน้ำ-ค่าไฟฟ้า”</span></label>
         <label class="field"><span class="field-label">ขนาดตัวอักษรใบแจ้งหนี้ (px)</span><input type="number" inputmode="numeric" id="s-font" min="14" max="40" step="1"></label>
       </div>
       <div class="field-row">
