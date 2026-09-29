@@ -298,6 +298,56 @@ function toggleZoom(){
   fitInvoice();
 }
 
+/**
+ * คัดลอกรูปใบแจ้งหนี้ลงคลิปบอร์ด ไปวาง (Ctrl+V) ในแชทส่งผู้เช่าได้เลย
+ * ออกใบแจ้งหนี้ใหม่จากฟอร์มก่อนทุกครั้ง รูปจะตรงกับตัวเลขล่าสุดเสมอ
+ * เครื่องที่คัดลอกรูปไม่ได้ จะเปิดเมนูแชร์ (มือถือ) หรือบันทึกเป็นไฟล์ PNG แทน
+ */
+async function copyInvoiceImage(){
+  const m = doReport({scroll:false});
+  if (!m) return;
+  // Safari ต้องเรียก clipboard.write ทันทีตอนกดปุ่ม (ส่ง Promise ของรูปเข้าไปแทนการรอวาดเสร็จ)
+  const png = invoicePng($('#invoice'));
+  png.catch(() => {});
+  const btn = $('#btn-copy-img');
+  setBusy(btn, true, 'กำลังสร้างรูป…');
+  try{
+    if (!navigator.clipboard || !navigator.clipboard.write || typeof ClipboardItem === 'undefined'){
+      throw new Error('clipboard unsupported');
+    }
+    await navigator.clipboard.write([new ClipboardItem({'image/png': png})]);
+    toast('คัดลอกรูปใบแจ้งหนี้แล้ว — วาง (Ctrl+V) ในแชทได้เลย', 'ok');
+  }catch(err){
+    try{
+      await shareOrDownload(await png, 'ใบแจ้งหนี้ ' + toISO(m.billDate) + '.png');
+    }catch(e){
+      toast('สร้างรูปไม่สำเร็จ: ' + e.message, 'err');
+    }
+  }finally{
+    setBusy(btn, false);
+  }
+}
+
+async function shareOrDownload(blob, name){
+  const file = new File([blob], name, {type: 'image/png'});
+  if (navigator.canShare && navigator.canShare({files: [file]})){
+    try{
+      await navigator.share({files: [file]});
+      return;
+    }catch(e){
+      if (e.name === 'AbortError') return;       // ผู้ใช้ปิดเมนูแชร์เอง
+    }
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  toast('เบราว์เซอร์นี้คัดลอกรูปไม่ได้ — บันทึกเป็นไฟล์ ' + name + ' ให้แทน');
+}
+
 async function doSave(){
   const m = currentModel();
   if (!m) return;
@@ -584,6 +634,7 @@ function init(){
 
   $('#btn-report').addEventListener('click', () => doReport());
   $('#btn-save').addEventListener('click', doSave);
+  $('#btn-copy-img').addEventListener('click', copyInvoiceImage);
   $('#btn-print').addEventListener('click', () => {
     if (!$('#invoice')) doReport({scroll:false});
     if ($('#invoice')) window.print();
